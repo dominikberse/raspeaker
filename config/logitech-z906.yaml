@@ -1,0 +1,122 @@
+commands:
+  - TurnOn
+  - TurnOff
+  - ToggleMute
+  - VolumeUp
+  - VolumeDown
+  - SelectInput
+  - SelectEffect
+  - RequestState
+
+states:
+  - name: Input
+    type: enum
+    setter: SelectInput
+    options:
+      - AuxDolby
+      - Chinch
+      - Optical1
+      - Optical2
+      - Input5
+      - AuxStereo
+  - name: Effect
+    type: enum
+    setter: SelectEffect
+    options:
+      - "3D"
+      - "4.1"
+      - "2.1"
+      - Dolby
+    replicas:
+      - "Input.Chinch"
+      - "Input.Input5"
+      - "Input.AuxStereo"
+  - name: Channel
+    type: enum
+    setter: SelectChannel
+    options:
+      - Master
+      - Front
+      - Rear
+      - Center
+      - Sub
+  - name: Volume
+    type: number
+    range: [0, 43]
+    replicas:
+      - "Channel.Master"
+      - "Channel.Front"
+      - "Channel.Rear"
+      - "Channel.Center"
+      - "Channel.Sub"
+
+modules:
+  - Z906.controller:
+      serial: /dev/ttyAMA0
+  - Z906.panel:
+      pins:
+        Q1: 16
+        Q2: 20
+        Q3: 5
+        Q4: 10
+        Q5: 6
+        Q6: 21
+        Q7: 25
+        Q8: 19
+        Q9: 8
+        Q10: 9
+        Q11: 12
+        Q12: 13
+        Q13: 7
+  - adafruit.ads1015:
+      name: "ADC"
+  - button.gpio:
+      pin: 23
+      method: Power.Toggle
+  - button.analog:
+      - voltage: [0.150, 0.170]
+        method: State.Toggle
+        value: Input
+        source: ADC.P0
+      - voltage: [1.320, 1.380]
+        method: State.Toggle
+        value: Input
+        source: ADC.P0
+      - voltage: [1.895, 1.955]
+        method: State.Toggle
+        value: Channel
+        source: ADC.P0
+      - voltage: [2.495, 2.555]
+        method: State.Toggle
+        value: Effect
+        source: ADC.P0
+  - rotary:
+      pins:
+        GPIO1: 22
+        GPIO2: 27
+      up: Command.VolumeUp
+      down: Command.VolumeDown
+  - ir:
+      - keycode: 172160
+        method: Power.Toggle
+        bounce: 2.0
+      - keycode: 172040
+        method: State.Toggle
+        value: Input
+      - keycode: 172266
+        method: Command.ToggleMute
+      - keycode: 172042
+        method: State.Toggle
+        value: Channel
+      - keycode: 172046
+        method: State.Toggle
+        value: Effect
+      - keycode: 172202
+        method: Command.VolumeUp
+        repeatable: True
+        bounce: 0.1
+      - keycode: 172138
+        method: Command.VolumeDown
+        repeatable: True
+        bounce: 0.1
+  - api:

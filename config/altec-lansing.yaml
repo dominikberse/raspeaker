@@ -1,0 +1,17 @@
+commands:
+  - TurnOn
+  - TurnOff
+  - ToggleMute
+  - VolumeUp
+  - VolumeDown
+
+states:
+  - name: Volume
+    type: number
+    range: [26, 111]
+
+modules:
+  - AltecLansing.controller:
+      channel: i2c0
+  - relay:
+  - api:

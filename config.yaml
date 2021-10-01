@@ -1,0 +1,25 @@
+commands:
+  SetPower:
+    Power: boolean
+  TogglePower:
+  SetVolume:
+    Volume: number
+  ToggleMute:
+  VolumeUp:
+  VolumeDown:
+
+states:
+  - name: Power
+    type: boolean
+  - name: Volume
+    type: number
+    range: [26, 111]
+
+modules:
+  - AltecLansing.controller:
+      i2c: 0
+  - AltecLansing.input:
+      i2c: 1
+  - output:
+      state: Power
+  - api:
