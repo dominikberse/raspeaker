@@ -39,4 +39,4 @@ for module in config.require('modules').items():
 
 # run application
 service.start()
-app.run()
+app.run(host='0.0.0.0')
