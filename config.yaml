@@ -18,8 +18,6 @@ states:
 modules:
   - AltecLansing.controller:
       i2c: 0
-  - AltecLansing.input:
-      i2c: 1
   - output:
       state: Power
   - api:
