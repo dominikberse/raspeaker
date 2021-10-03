@@ -5,13 +5,13 @@ but I found the solution to be quite versatile. So when I upgraded another
 sound system I had lying around, I decided to abstract this project from
 the underlying hardware.
 
-So this piece of software can be used to create a Raspberry Pi based speaker,
+This piece of software can be used to create a Raspberry Pi based speaker,
 or to upgrade an existing sound system. It is especially useful for integrating
 an existing control panel (like buttons, IR, rotary encoder, ...).
 
 The application mainly consists of more or less hardware-specific modules. Some
 can be reused in arbitrary cases, while others are for a single specific device.
-The idea is to provide a simple platform, that you can easily configure use YAML 
+The idea is to provide a simple platform, that you can easily configure using YAML 
 and extend using python.
 
 ## Installation
