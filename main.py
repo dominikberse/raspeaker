@@ -5,7 +5,7 @@ from core.config import Config
 from core.module import Module
 
 import logging
-#import pigpio
+import pigpio
 import flask
 import os
 
@@ -22,9 +22,9 @@ app = flask.Flask(__name__)
 
 # load GPIO
 pi = None  # pigpio.pi()
-# if not pi.connected:
-#    logging.error("GPIO not available")
-#    exit(0)
+if not pi.connected:
+    logging.error("GPIO not available")
+    exit(0)
 
 # initialize core
 state = State(config.require('states'))
