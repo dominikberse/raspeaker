@@ -21,7 +21,7 @@ config = Config.load(yaml)
 app = flask.Flask(__name__)
 
 # load GPIO
-pi = None  # pigpio.pi()
+pi = pigpio.pi()
 if not pi.connected:
     logging.error("GPIO not available")
     exit(0)
