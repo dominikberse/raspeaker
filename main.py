@@ -34,7 +34,7 @@ queue = Queue(config.require('commands'))
 service = Service(state, queue)
 for module in config.require('modules').items():
     type = module.single().oftype(Config.Key, 'modules', base=Module)
-    instance = type(pi, state, queue, app, module.value)
+    instance = type(pi, state, queue, app, module.single().items())
     service.register(instance)
 
 # run application
