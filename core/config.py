@@ -41,9 +41,9 @@ class Config:
 
     def items(self):
         if isinstance(self._value, dict):
-            return {Config(key, value) for key, value in self._value.items()}
+            return (Config(key, value) for key, value in self._value.items())
         elif isinstance(self._value, list):
-            return [Config(value=value) for value in self._value]
+            return (Config(value=value) for value in self._value)
         else:
             return [self._value]
 
