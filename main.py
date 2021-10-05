@@ -1,5 +1,6 @@
 
-from core.model import State, Queue
+from core.state import State
+from core.queue import Queue
 from core.service import Service
 from core.config import Config
 from core.module import Module
@@ -27,8 +28,8 @@ if not pi.connected:
     exit(0)
 
 # initialize core
-state = State(config.require('states'))
-queue = Queue(config.require('commands'))
+queue = Queue(config.optional('commands', {}))
+state = State(config.require('states'), queue)
 
 # initialize components
 service = Service(state, queue)

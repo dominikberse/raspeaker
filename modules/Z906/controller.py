@@ -348,10 +348,3 @@ class Controller(ConsumingComponent):
         self._state._input = input
         self._state._effects = effects
         self._state._event.set()
-
-    def consume(self):
-        """ Execute all commands from queue """
-
-        while not self._queue.drained:
-            (command, params, kwargs) = self._queue.dequeue()
-            self._execute(command, *params, **kwargs)

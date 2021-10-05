@@ -11,9 +11,9 @@ class Module:
         self._app = app
         self._config = config
 
-    def command(self, command, *params, **kwargs):
+    def command(self, command, *args, **kwargs):
         """ Shorthand to fire a command """
-        self._queue.enqueue(command, *params, **kwargs)
+        self._queue.enqueue(command, *args, **kwargs)
 
     def update(self):
         """ Called upon state changes """
@@ -46,6 +46,16 @@ class ConsumingModule(Module):
 
     def __init__(self, pi, state, queue, app, config):
         super().__init__(pi, state, queue, app, config)
+        self._commands = {}
+
+    def _register_commands(self, **kwargs):
+        """
+        Register handlers for all known commands
+
+        The handlers will be automatically invoced, whenever a command is enqueued.
+        TODO: Compare known handlers to commands provided in config.
+        """
+        self._commands = kwargs
 
     def _update_state(self, property, value):
         """ 
@@ -54,8 +64,19 @@ class ConsumingModule(Module):
         The consuming module is the only module that is allowed to write to the state.
         Therefore this method is hidden here.
         """
-        self._state._update(property, value)
+
+        if(self._state._update(property, value)):
+            self._state._notify()
+            return True
+
+        return False
 
     def consume(self):
-        """ Called upon enqueued commands """
-        pass
+        """ Execute all commands from queue """
+
+        while not self._queue.drained:
+            command = self._queue.dequeue()
+
+            while command is not None:
+                override = self._commands.get(command.name)
+                command = command.execute(override)

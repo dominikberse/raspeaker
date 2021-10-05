@@ -113,7 +113,7 @@ class Service:
             self._state.clear()
 
             # start polling loop if neccessary
-            if self._state.get('Power') and not self._poll_worker.running:
+            if self._state.get('power') and not self._poll_worker.running:
                 self._poll_worker.start()
 
             # run updates on components
@@ -121,7 +121,7 @@ class Service:
                 component.update()
 
             # stop polling loop if neccessary
-            if not self._state.get('Power') and self._poll_worker.running:
+            if not self._state.get('power') and self._poll_worker.running:
                 self._poll_worker.stop()
 
             self._state.wait()

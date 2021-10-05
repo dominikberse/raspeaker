@@ -1,5 +1,4 @@
 from core.module import Module
-from core.model import Queue, State
 
 import logging
 import flask

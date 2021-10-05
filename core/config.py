@@ -3,6 +3,25 @@ import importlib
 import yaml
 
 
+class Pin:
+    """ Represents logical information about a pin """
+    def __init__(self, descriptor):
+        self._descriptor = descriptor
+        self._invert = descriptor[0] == '!'
+        self._number = int(descriptor.strip('!'))
+
+    @property
+    def invert(self):
+        return self._invert
+
+    @property
+    def number(self):
+        return self._number
+
+    def __str__(self):
+        return self._descriptor
+
+
 class Config:
     """ Represents a partial or full YAML configuration """
     Key = '__key__'
@@ -78,3 +97,10 @@ class Config:
         except:
             raise Exception(f'Invalid value "{submodule}" for "{key}"')
         return type
+
+    def pin(self, key):
+        descriptor = self.require(key).value
+        try:
+            return Pin(descriptor)
+        except:
+            raise Exception(f'Invalid pin descriptor "{descriptor}" for "{key}"')
