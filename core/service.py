@@ -114,6 +114,7 @@ class Service:
 
             # start polling loop if neccessary
             if self._state.get('power') and not self._poll_worker.running:
+                logging.info('device turned on')
                 self._poll_worker.start()
 
             # run updates on components
@@ -122,6 +123,7 @@ class Service:
 
             # stop polling loop if neccessary
             if not self._state.get('power') and self._poll_worker.running:
+                logging.info('device turned off')
                 self._poll_worker.stop()
 
             self._state.wait()
