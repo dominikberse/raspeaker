@@ -30,7 +30,7 @@ class Queue:
             if override is None:
                 raise Exception(f'No handler for {self._command}()')
 
-            logging.info(
+            logging.debug(
                 f'execute {self._command}({self._args}, {self._kwargs})')
             derivate = override(*self._args, **self._kwargs)
             if derivate is None:
@@ -38,7 +38,7 @@ class Queue:
 
             # return derived command that is executed afterwards
             (command, args) = derivate
-            logging.info(f'continue with {command}({args})')
+            logging.debug(f'continue with {command}({args})')
             return Queue.Command(command, None, args, {})
 
     def __init__(self, config):

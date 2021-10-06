@@ -14,7 +14,7 @@ class Output(Module):
         self._pin = config.pin('pin')
 
         pi.set_mode(self._pin.number, pigpio.OUTPUT)
-        logging.debug(f'pin {self._pin} output')
+        logging.info(f'pin {self._pin} output')
 
     def update(self):
         level = self._state.get(self._element) ^ self._pin.invert

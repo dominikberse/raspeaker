@@ -9,7 +9,7 @@ class Element:
         self._value = config.optional('initial', default).value
         self._templates = templates
 
-        logging.debug(f'state.{self._name}={self._value}')
+        logging.info(f'registered state.{self._name}={self._value}')
 
     @property
     def name(self):
@@ -45,7 +45,7 @@ class Element:
         """
 
         if self._value != value:
-            logging.debug(f'state.{self._name}={value}')
+            logging.info(f'state.{self._name}={value}')
             self._value = value
             return True
 

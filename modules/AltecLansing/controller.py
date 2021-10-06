@@ -63,7 +63,7 @@ class Controller(ConsumingModule):
         return (self.to_4bit(high) << 4) | self.to_4bit(low)
 
     def _send_command(self, command, value):
-        # logging.debug(f'sending {bytes([command, value])}')
+        logging.debug(f'sending {bytes([command, value])}')
         self._pi.i2c_write_device(self._i2c, [command, value])
 
     def _send_state(self):
@@ -114,7 +114,7 @@ class Controller(ConsumingModule):
         """ Receive command from satellite """
 
         _, count, data = self._pi.bsc_i2c(Controller.I2C_ADDRESS)
-        # logging.debug(f'received {count} bytes: {data}')
+        logging.debug(f'received {count} bytes: {data}')
 
         # parse command and forward to handler to update state
         for i in range(0, count, 2):

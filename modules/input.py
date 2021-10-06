@@ -22,10 +22,10 @@ class Input(Module):
 
         # register callback for input pin
         self._callback = pi.callback(self._pin.number, mode, self._change)
-        logging.debug(f'pin {self._pin} {self._mode}')
+        logging.info(f'pin {self._pin} {self._mode}')
 
     def _change(self, pin, level, tick):
-        logging.info(f'pin {pin} changed to {level}')
+        logging.debug(f'pin {pin} changed to {level}')
 
         if self._mode == 'switch':
             # switch has internal state
