@@ -45,7 +45,7 @@ class Element:
         """
 
         if self._value != value:
-            logging.info(f'state.{self._name}={value}')
+            logging.debug(f'state.{self._name}={value}')
             self._value = value
             return True
 
