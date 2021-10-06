@@ -135,6 +135,9 @@ class Service:
             self._pollers.append(component)
         self._components.append(component)
 
+        # initialize component state
+        component.update()
+
     def start(self):
         self._queue_worker.start()
         self._update_worker.start()

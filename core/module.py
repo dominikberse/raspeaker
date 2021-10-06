@@ -12,11 +12,16 @@ class Module:
         self._config = config
 
     def command(self, command, *args, **kwargs):
-        """ Shorthand to fire a command """
+        """ Enqueue a command """
         self._queue.enqueue(command, *args, **kwargs)
 
     def update(self):
-        """ Called upon state changes """
+        """ 
+        Called upon state changes 
+
+        It is ensured that update is called once after initialization to allow
+        the component to find it's initial state.
+        """
         pass
 
 
@@ -32,7 +37,7 @@ class PollingModule(Module):
         super().__init__(pi, state, queue, app, config)
 
     def poll(self):
-        """ Called in main polling loop"""
+        """ Called in main polling loop """
         pass
 
 
