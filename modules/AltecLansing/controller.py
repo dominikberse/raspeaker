@@ -65,6 +65,7 @@ class Controller(ConsumingModule):
     def _synchronize_i2c(self):
         """ Ensure I2C is enabled by pulling SDA high """
 
+        # send SDA high over I2C pins (for 300ms)
         logging.info(f'synchronizing i2c{self._bus}')
         self._pi.set_mode(2, pigpio.OUTPUT)
         self._pi.set_mode(3, pigpio.OUTPUT)
@@ -72,14 +73,21 @@ class Controller(ConsumingModule):
         self._pi.write(3, 0)
         time.sleep(0.3)
 
+        # reset output pins to be available for I2C
+        self._pi.set_mode(2, pigpio.ALT0)
+        self._pi.set_mode(3, pigpio.ALT0)
+
         # register as I2C master
         logging.info(f'connecting over i2c{self._bus}')
         self._i2c = self._pi.i2c_open(self._bus, Controller.I2C_ADDRESS)
 
     def _send_command(self, command, value):
         """ Send a single command over I2C """
-        logging.debug(f'sending {bytes([command, value])}')
-        self._pi.i2c_write_device(self._i2c, [command, value])
+        try:
+            logging.debug(f'sending {bytes([command, value])}')
+            self._pi.i2c_write_device(self._i2c, [command, value])
+        except Exception as e:
+            logging.exception('failed to send')
 
     def _send_state(self):
         """ Transmit the current state to the main unit """
