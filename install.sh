@@ -70,7 +70,7 @@ if ! grep -q -E "^ExecStart=.*\s+-m\b$" /lib/systemd/system/pigpiod.service ; th
 fi
 
 # adjust ALSA mixer
-if whiptail --yesno "Set USB audio as default for alsa mixer?" --defaultno 20 60 then
+if whiptail --yesno "Set USB audio as default for alsa mixer?" --defaultno 20 60 ; then
   sudo sed -i "s/^defaults.ctl.card [[:digit:]]\+/defaults.ctl.card 1/" /usr/share/alsa/alsa.conf
   sudo sed -i "s/^defaults.pcm.card [[:digit:]]\+/defaults.pcm.card 1/" /usr/share/alsa/alsa.conf
 fi
