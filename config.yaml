@@ -22,6 +22,6 @@ modules:
       pin: "!17"
       set: power_set
   - output:
-      pin: "!16"
+      pin: "16"
       state: power
   - api:

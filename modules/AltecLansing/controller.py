@@ -4,6 +4,7 @@ from core import pins
 
 import logging
 import pigpio
+import time
 
 
 class Controller(ConsumingModule):
@@ -33,9 +34,8 @@ class Controller(ConsumingModule):
         self._event = pi.event_callback(pigpio.EVENT_BSC, self._receive)
         pi.bsc_i2c(Controller.I2C_ADDRESS)
 
-        # register as I2C master
-        logging.info(f'connecting over i2c{self._bus}')
-        self._i2c = pi.i2c_open(self._bus, Controller.I2C_ADDRESS)
+        # establish I2C master connection
+        self._synchronize_i2c()
 
         # register known satellite commands
         self._satellite_commands = {
@@ -62,7 +62,22 @@ class Controller(ConsumingModule):
         """ Convert two integers to packed 4 bit values """
         return (self.to_4bit(high) << 4) | self.to_4bit(low)
 
+    def _synchronize_i2c(self):
+        """ Ensure I2C is enabled by pulling SDA high """
+
+        logging.info(f'synchronizing i2c{self._bus}')
+        self._pi.set_mode(2, pigpio.OUTPUT)
+        self._pi.set_mode(3, pigpio.OUTPUT)
+        self._pi.write(2, 1)
+        self._pi.write(3, 0)
+        time.sleep(0.3)
+
+        # register as I2C master
+        logging.info(f'connecting over i2c{self._bus}')
+        self._i2c = self._pi.i2c_open(self._bus, Controller.I2C_ADDRESS)
+
     def _send_command(self, command, value):
+        """ Send a single command over I2C """
         logging.debug(f'sending {bytes([command, value])}')
         self._pi.i2c_write_device(self._i2c, [command, value])
 

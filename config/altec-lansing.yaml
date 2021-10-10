@@ -1,17 +1,27 @@
 commands:
-  - TurnOn
-  - TurnOff
-  - ToggleMute
-  - VolumeUp
-  - VolumeDown
+  - power_set
+  - volume_set
+  - treble_set
+  - bass_set
 
 states:
-  - name: Volume
+  power:
+    type: boolean
+  volume:
     type: number
-    range: [26, 111]
+  treble:
+    type: number
+  bass:
+    type: number
 
 modules:
   - AltecLansing.controller:
-      channel: i2c0
-  - relay:
+      i2c: 1
+  - input:
+      mode: switch
+      pin: "!17"
+      set: power_set
+  - output:
+      pin: "16"
+      state: power
   - api:
