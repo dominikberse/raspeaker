@@ -64,7 +64,7 @@ fi
 
 # append -m option to pigpiod
 if ! grep -q -E "^ExecStart=.*\s+-m\b$" /lib/systemd/system/pigpiod.service ; then
-  if whiptail --yesno "Disable pigpiod sampling to reduce CPU usage?" 20 60 then
+  if whiptail --yesno "Disable pigpiod sampling to reduce CPU usage?" 20 60 ; then
     sudo sed -i "s/^ExecStart=.*/&  -m/" /lib/systemd/system/pigpiod.service
   fi
 fi
