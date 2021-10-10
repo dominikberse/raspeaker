@@ -45,8 +45,7 @@ EOF
 
 # enable IR GPIO
 # TODO: adjust service file accordingly
-whiptail --yesno "Enable IR diode overlay?" --defaultno 20 60
-if [ "$?" -eq 0 ] ; then
+if whiptail --yesno "Enable IR diode overlay?" --defaultno 20 60 ; then
   GPIO=$(whiptail --inputbox "To which GPIO is the IR diode connected?" 20 60 "26" 3>&1 1>&2 2>&3)
   if ! [ $? -eq 0 ] ; then
     return 0
@@ -65,15 +64,13 @@ fi
 
 # append -m option to pigpiod
 if ! grep -q -E "^ExecStart=.*\s+-m\b$" /lib/systemd/system/pigpiod.service ; then
-  whiptail --yesno "Disable pigpiod sampling to reduce CPU usage?" 20 60
-  if [ "$?" -eq 0 ] ; then
+  if whiptail --yesno "Disable pigpiod sampling to reduce CPU usage?" 20 60 then
     sudo sed -i "s/^ExecStart=.*/&  -m/" /lib/systemd/system/pigpiod.service
   fi
 fi
 
 # adjust ALSA mixer
-whiptail --yesno "Set USB audio as default for alsa mixer?" --defaultno 20 60
-if [ "$?" -eq 0 ] ; then
+if whiptail --yesno "Set USB audio as default for alsa mixer?" --defaultno 20 60 then
   sudo sed -i "s/^defaults.ctl.card [[:digit:]]\+/defaults.ctl.card 1/" /usr/share/alsa/alsa.conf
   sudo sed -i "s/^defaults.pcm.card [[:digit:]]\+/defaults.pcm.card 1/" /usr/share/alsa/alsa.conf
 fi
@@ -86,10 +83,9 @@ sudo systemctl enable raspeaker
 systemctl list-unit-files --all | grep -q "raspotify"
 RASPOTIFY=$?
 if [ "$RASPOTIFY" -eq 1 ] ; then
-  whiptail --yesno "Install raspotify?" 20 60
-    
+  
   # install raspotify
-  if [ "$?" -eq 0 ] ; then
+  if whiptail --yesno "Install raspotify?" 20 60 ; then
     (curl -sL https://dtcooper.github.io/raspotify/install.sh | sh)
     RASPOTIFY=0
     
@@ -102,8 +98,7 @@ if [ "$RASPOTIFY" -eq 1 ] ; then
 fi
 
 if [ "$RASPOTIFY" -eq 0 ] ; then
-  whiptail --yesno "Configure raspotify for read-only filesystem?" 20 60
-  if [ "$?" -eq 0 ] ; then
+  if whiptail --yesno "Configure raspotify for read-only filesystem?" 20 60 ; then
 
     # prepare for possible read-only mode
     sudo systemctl stop raspotify
@@ -117,7 +112,6 @@ if [ "$RASPOTIFY" -eq 0 ] ; then
 fi
 
 # reboot
-whiptail --yesno "Installation complete. System needs to be rebooted.\n\nReboot now?" 20 60
-if [ "$?" -eq 0 ] ; then
+if whiptail --yesno "Installation complete. System needs to be rebooted.\n\nReboot now?" 20 60 ; then
   sudo reboot
 fi
