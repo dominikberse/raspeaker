@@ -18,46 +18,50 @@ pip3 install \
   adafruit-circuitpython-ads1x15
 
 # clone repository
-if ! [ -d "/home/pi/logitech-z906" ]; then
-  git clone https://github.com/dominikberse/logitech-z906.git /home/pi/logitech-z906
+if ! [ -d "/home/pi/raspeaker" ]; then
+  git clone https://github.com/dominikberse/raspeaker.git /home/pi/raspeaker
 fi
 
 # disable serial console but enable serial hardware
 sudo raspi-config nonint do_serial 2
 sudo raspi-config nonint do_i2c 0
 
+# configure service
+sudo tee /etc/systemd/system/raspeaker.service > /dev/null <<'EOF'
+[Unit]
+Description=Raspeaker
+After=network.target pigpiod.service
+
+[Service]
+User=pi
+Group=www-data
+WorkingDirectory=/home/pi/raspeaker
+# ExecStartPre=+/usr/bin/ir-keytable -p nec
+ExecStart=/home/pi/.local/bin/gunicorn --workers 1 --bind 0.0.0.0:5000 main:app
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 # enable IR GPIO
-GPIO=$(whiptail --inputbox "To which GPIO is the IR diode connected?" 20 60 "26" 3>&1 1>&2 2>&3)
-if ! [ $? -eq 0 ] ; then
-  return 0
-fi
-if ! grep -q "dtoverlay=gpio-ir" $CONFIG ; then
-  sudo sed $CONFIG -i -e "\$adtoverlay=gpio-ir,gpio_pin=26"
-else
-  sudo sed $CONFIG -i -e "s/^.*dtoverlay=gpio-ir.*/dtoverlay=gpio-ir,gpio_pin=26/"
+# TODO: adjust service file accordingly
+whiptail --yesno "Enable IR diode overlay?" --defaultno 20 60
+if [ "$?" -eq 0 ] ; then
+  GPIO=$(whiptail --inputbox "To which GPIO is the IR diode connected?" 20 60 "26" 3>&1 1>&2 2>&3)
+  if ! [ $? -eq 0 ] ; then
+    return 0
+  fi
+  if ! grep -q "dtoverlay=gpio-ir" $CONFIG ; then
+    sudo sed $CONFIG -i -e "\$adtoverlay=gpio-ir,gpio_pin=26"
+  else
+    sudo sed $CONFIG -i -e "s/^.*dtoverlay=gpio-ir.*/dtoverlay=gpio-ir,gpio_pin=26/"
+  fi
 fi
 
 # move bluetooth to miniuart-bt
 if ! grep -q "dtoverlay=pi3-miniuart-bt" $CONFIG ; then
   sudo sed $CONFIG -i -e "\$adtoverlay=pi3-miniuart-bt"
 fi
-
-# configure logitech service
-sudo tee /etc/systemd/system/logitech.service > /dev/null <<'EOF'
-[Unit]
-Description=media center api
-After=network.target pigpiod.service
-
-[Service]
-User=pi
-Group=www-data
-WorkingDirectory=/home/pi/logitech-z906
-ExecStartPre=+/usr/bin/ir-keytable -p nec
-ExecStart=/home/pi/.local/bin/gunicorn --workers 1 --bind 0.0.0.0:5000 main:app
-
-[Install]
-WantedBy=multi-user.target
-EOF
 
 # append -m option to pigpiod
 if ! grep -q -E "^ExecStart=.*\s+-m\b$" /lib/systemd/system/pigpiod.service ; then
@@ -76,7 +80,7 @@ fi
 
 # enable services
 sudo systemctl enable pigpiod
-sudo systemctl enable logitech
+sudo systemctl enable raspeaker
 
 # check raspotify
 systemctl list-unit-files --all | grep -q "raspotify"
